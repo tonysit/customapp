@@ -1,0 +1,53 @@
+{
+  "name": "customapp",
+  "version": "0.0.1",
+  "private": true,
+  "homepage": "./dist",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "web": "./scripts/start_web.sh",
+    "build": "./scripts/build_web.sh"
+  },
+  "dependencies": {
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-navigation/native": "^5.9.4",
+    "@react-navigation/stack": "^5.14.4",
+    "i18next": "^21.6.0",
+    "react": "17.0.2",
+    "react-dom": "^17.0.2",
+    "react-i18next": "^11.15.1",
+    "react-native": "0.66.4",
+    "react-native-dotenv": "^2.5.5",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-reanimated": "^2.1.0",
+    "react-native-safe-area-context": "^3.2.0",
+    "react-native-screens": "^3.1.0",
+    "react-native-vector-icons": "^8.1.0",
+    "react-native-web": "^0.15.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.14",
+    "@babel/preset-flow": "^7.13.13",
+    "@babel/preset-react": "^7.13.13",
+    "@babel/runtime": "7.13.10",
+    "@react-native-community/eslint-config": "2.0.0",
+    "babel-jest": "26.6.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-react-native-web": "^0.15.5",
+    "eslint": "7.14.0",
+    "jest": "^26.6.3",
+    "metro-react-native-babel-preset": "0.64.0",
+    "react-test-renderer": "17.0.1",
+    "url-loader": "^4.1.1",
+    "webpack": "^4.46.0",
+    "webpack-cli": "3.3.3",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
