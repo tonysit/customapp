@@ -14,19 +14,31 @@
    TouchableOpacity
  } from 'react-native';
  import { useTranslation } from 'react-i18next';
+ import { useSelector, useDispatch } from 'react-redux';
 
 import DispatchContext from '../../../contexts/DispatchContext';
 import StateContext from '../../../contexts/StateContext';
  
  const Login = () => {
-  const globalDispatch = React.useContext(DispatchContext);
-  const globalState = React.useContext(StateContext);
+
+  // use context section
+  const contextDispatch = React.useContext(DispatchContext);
+  const contextState = React.useContext(StateContext);
+
+  // use redux section
+  const dispatch = useDispatch();
+  const { count } = useSelector(state => {
+    return {
+      count: state.home.count
+    };
+  });
+
   const { t } = useTranslation();
 
   return (
      <View>
-         <Text>{globalState.count}</Text>
-        <TouchableOpacity onPress={() => globalDispatch({type: 'SET_COUNT', payload: ++globalState.count})}><Text>{t('Click')}</Text></TouchableOpacity>
+         <Text>{count}</Text>
+        <TouchableOpacity onPress={() => dispatch({type: 'SET_COUNT', payload: count+1})}><Text>{t('Click')}</Text></TouchableOpacity>
      </View>
    );
  };

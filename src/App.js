@@ -15,60 +15,80 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
+import { Provider } from 'react-redux';
+import { createLogger } from 'redux-logger'
+import { DEBUG } from "@env";
+import thunk from 'redux-thunk';
 
-// import Main from './components/views/Main';
 import DispatchContext from './contexts/DispatchContext';
 import StateReducer, { initialState } from './reducers/StateReducer';
 import StateContext from './contexts/StateContext';
-
-// all page settings
-import RootScreen from './components/views/root/Root';
-import LoginScreen from './components/views/login/Login';
+import Reducers from './configs/Reducers';
+import Routes from './configs/Routes';
 
 const Stack = createStackNavigator();
+let middleware = [thunk];
 
- const config = {
-  screens: {
-    Root: '',
-    Login: 'login',
-  },
-};
-
-const SCREENS = {
-  // Root: { title: 'Root Stack', component: RootScreen },
-  // Login: { title: 'Login Stack', component: LoginScreen },
+if(DEBUG === 'true'){
+  middleware.push(createLogger({
+    collapsed: true,
+    predicate: (getState, action) => true,
+  }));
 }
 
-const linking = {
-  // prefixes: ['https://mychat.com', 'mychat://'],
-  config,
-};
+const store = createStore(
+  combineReducers(Reducers), 
+  applyMiddleware(...middleware)
+);
 
- const App = () => {
+const App = () => {
   const [state, dispatch] = React.useReducer(StateReducer, initialState);
   const { i18n } = useTranslation();
 
+  const renderScreens = React.useCallback(() => {
+    let screens = [];
+    let linking = {
+      // initialRouteName: '',
+      config:{
+        screens: {}
+      }
+    };
+
+    if(Routes){
+      for(let key in Routes){
+        screens.push({
+          name: key,
+          component: Routes[key].component,
+          options: Routes[key].options
+        });
+        linking.config.screens[key] = (key === 'root' ? '' : key);
+      }
+    }
+    return [screens, linking];
+  });
+
+  const [screens, linking] = renderScreens();
+  
   React.useEffect(() => {
     if (i18n.language !== state.i18n) {
         i18n.changeLanguage(state.i18n);
     }
-}, [state.i18n]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.i18n]); // eslint-disable-line react-hooks/exhaustive-deps
 
    return (
     <NavigationContainer 
-    linking={{
-      initialRouteName: 'Home',
-      
-    }} 
+    linking={linking} 
     fallback={<Text>Loading...</Text>}
     >
      <SafeAreaView style={styles.appContainer}>
         <DispatchContext.Provider value={dispatch}>
           <StateContext.Provider value={state}>
-            <Stack.Navigator>
-              <Stack.Screen name="Root" component={RootScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
-            </Stack.Navigator>
+            <Provider store={store}>
+              <Stack.Navigator>
+                { screens.map((item) => <Stack.Screen {...item} />) }
+              </Stack.Navigator>
+            </Provider>
           </StateContext.Provider>
         </DispatchContext.Provider>
       </SafeAreaView>

@@ -13,23 +13,37 @@
    View,
    TouchableOpacity
  } from 'react-native';
-import {API_URL, API_TOKEN} from "@env"
+import {API_URL, API_TOKEN} from "@env";
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 
 import DispatchContext from '../../../contexts/DispatchContext';
 import StateContext from '../../../contexts/StateContext';
  
 const Root = ({ navigation }) => {
-    const globalDispatch = React.useContext(DispatchContext);
-    const globalState = React.useContext(StateContext);
-    const { t } = useTranslation();
+  // use context section
+  const contextDispatch = React.useContext(DispatchContext);
+  const contextState = React.useContext(StateContext);
 
-   return (
-     <View>
-         <Text>{globalState.count}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}><Text>{t('Click')}</Text></TouchableOpacity>
-     </View>
-   );
+  // use redux section
+  const dispatch = useDispatch();
+  const { count } = useSelector(state => {
+    return {
+      count: state.home.count
+    };
+  });
+
+  const { t } = useTranslation();
+    
+  return (
+    <View>
+        <Text>{count}</Text>
+      <TouchableOpacity onPress={() => {
+        navigation.navigate('login');
+        // dispatch({type: 'SET_COUNT', payload: count+1})
+      }}><Text>{t('Click')}</Text></TouchableOpacity>
+    </View>
+  );
 };
  
 const styles = StyleSheet.create({
