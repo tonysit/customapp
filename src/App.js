@@ -10,9 +10,13 @@
  import {
    SafeAreaView,
    StyleSheet,
-   Text
+   Text,
+   useColorScheme
  } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { 
+  NavigationContainer,
+  useTheme
+} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
@@ -20,12 +24,15 @@ import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger'
 import { DEBUG } from "@env";
 import thunk from 'redux-thunk';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 import DispatchContext from './contexts/DispatchContext';
 import StateReducer, { initialState } from './reducers/StateReducer';
 import StateContext from './contexts/StateContext';
 import Reducers from './configs/Reducers';
 import Routes from './configs/Routes';
+import { DeviceSetting } from './configs/Config';
+import { DefaultTheme, DarkTheme } from './configs/Styles';
 
 const Stack = createStackNavigator();
 let middleware = [thunk];
@@ -45,6 +52,8 @@ const store = createStore(
 const App = () => {
   const [state, dispatch] = React.useReducer(StateReducer, initialState);
   const { i18n } = useTranslation();
+  const scheme = useColorScheme();
+  const { colors } = useTheme();
 
   const renderScreens = React.useCallback(() => {
     let screens = [];
@@ -67,8 +76,6 @@ const App = () => {
     }
     return [screens, linking];
   });
-
-  const [screens, linking] = renderScreens();
   
   React.useEffect(() => {
     if (i18n.language !== state.i18n) {
@@ -76,25 +83,37 @@ const App = () => {
     }
   }, [state.i18n]); // eslint-disable-line react-hooks/exhaustive-deps
 
-   return (
-    <NavigationContainer 
-    linking={linking} 
-    fallback={<Text>Loading...</Text>}
-    >
-     <SafeAreaView style={styles.appContainer}>
-        <DispatchContext.Provider value={dispatch}>
-          <StateContext.Provider value={state}>
-            <Provider store={store}>
-              <Stack.Navigator>
-                { screens.map((item) => <Stack.Screen {...item} />) }
-              </Stack.Navigator>
-            </Provider>
-          </StateContext.Provider>
-        </DispatchContext.Provider>
-      </SafeAreaView>
-     </NavigationContainer>
-   );
- };
+  const [screens, linking] = renderScreens();
+  const currentTheme = scheme === 'dark' && DeviceSetting.darkMode ? DarkTheme : DefaultTheme;
+    
+  return (
+  <NavigationContainer 
+  linking={linking} 
+  fallback={<Text>Loading...</Text>}
+  theme={currentTheme}
+  >
+    <SafeAreaView style={styles.appContainer}>
+      <DispatchContext.Provider value={dispatch}>
+        <StateContext.Provider value={state}>
+          <Provider store={store}>
+            <Stack.Navigator
+            screenOptions={{
+              headerBackImage: () => <Icon name="chevron-left" size={24} color={currentTheme.colors.text} style={{padding: 10}}/>,
+              headerBackTitleVisible: false,
+              headerStyle: {
+                // backgroundColor: Color.headerBackground
+              }
+            }}
+            >
+              { screens.map((item) => <Stack.Screen {...item} />) }
+            </Stack.Navigator>
+          </Provider>
+        </StateContext.Provider>
+      </DispatchContext.Provider>
+    </SafeAreaView>
+    </NavigationContainer>
+  );
+};
  
  const styles = StyleSheet.create({
    appContainer: {
