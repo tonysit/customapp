@@ -53,7 +53,6 @@ const App = () => {
   const [state, dispatch] = React.useReducer(StateReducer, initialState);
   const { i18n } = useTranslation();
   const scheme = useColorScheme();
-  const { colors } = useTheme();
 
   const renderScreens = React.useCallback(() => {
     let screens = [];
@@ -87,30 +86,30 @@ const App = () => {
   const currentTheme = scheme === 'dark' && DeviceSetting.darkMode ? DarkTheme : DefaultTheme;
     
   return (
-  <NavigationContainer 
-  linking={linking} 
-  fallback={<Text>Loading...</Text>}
-  theme={currentTheme}
-  >
-    <SafeAreaView style={styles.appContainer}>
-      <DispatchContext.Provider value={dispatch}>
-        <StateContext.Provider value={state}>
-          <Provider store={store}>
-            <Stack.Navigator
-            screenOptions={{
-              headerBackImage: () => <Icon name="chevron-left" size={24} color={currentTheme.colors.text} style={{padding: 10}}/>,
-              headerBackTitleVisible: false,
-              headerStyle: {
-                // backgroundColor: Color.headerBackground
-              }
-            }}
-            >
-              { screens.map((item) => <Stack.Screen {...item} />) }
-            </Stack.Navigator>
-          </Provider>
-        </StateContext.Provider>
-      </DispatchContext.Provider>
-    </SafeAreaView>
+    <NavigationContainer 
+    linking={linking} 
+    fallback={<Text>Loading...</Text>}
+    theme={currentTheme}
+    >
+      <SafeAreaView style={styles.appContainer}>
+        <DispatchContext.Provider value={dispatch}>
+          <StateContext.Provider value={state}>
+            <Provider store={store}>
+              <Stack.Navigator
+              screenOptions={{
+                headerBackImage: () => <Icon name="chevron-left" size={24} color={currentTheme.colors.text} style={{padding: 10}}/>,
+                headerBackTitleVisible: false,
+                headerStyle: {
+                  // backgroundColor: Color.headerBackground
+                }
+              }}
+              >
+                { screens.map((item) => <Stack.Screen {...item} />) }
+              </Stack.Navigator>
+            </Provider>
+          </StateContext.Provider>
+        </DispatchContext.Provider>
+      </SafeAreaView>
     </NavigationContainer>
   );
 };
